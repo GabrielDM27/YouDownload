@@ -1,8 +1,7 @@
 import MainWindowModule
 
 def main():
-    mainWindow = MainWindowModule.MainWindow()
-    mainWindow.run()
+    MainWindowModule.MainWindow()
 
 if __name__ == "__main__":
     main()

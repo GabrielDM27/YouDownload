@@ -5,49 +5,88 @@ from tkinter import *
 from tkinter import messagebox
 
 class MainWindow:
-    theMainWindow = Tk() 
+    theMainWindow = Tk()
+    #Variables
+    choice=StringVar()
     
     # default constructor
     def __init__(self):
-        
         self.theMainWindow.title("YouDownload")
         self.theMainWindow.geometry("480x270")
         self.theMainWindow.state('zoomed')
+        
+        #Build Frames
+        self.buildTopFrame()
+        self.buildFetchFrame()
+        self.buildSelectionFrame()
+        
+        #Infinite loop
+        self.run()
 
-        self.theMainWindow.grid_rowconfigure(0,weight=1)
-        self.theMainWindow.grid_rowconfigure(2,weight=1)
-        self.theMainWindow.grid_columnconfigure(0,weight=1)
+    def buildTopFrame(self):
+        self.topFrame = Frame(self.theMainWindow ,
+                         name='topFrame',
+                         height=300 ,
+                         bg = 'red')
+        self.topFrame.pack(side='top')
         
-        topFrame = Frame(self.theMainWindow, bg = 'red')
-        topFrame.grid(row=0,sticky='nwse')
+    def buildFetchFrame(self):
+        self.fetchFrame = Frame(self.theMainWindow,
+                                name='fetchFrame',
+                                height=100,bg = 'blue')
+        self.fetchFrame.pack(side='top')
+                
+        self.urlFetchFrame = Frame(self.fetchFrame,
+                              name='urlFetchFrame',
+                              bg='black')
+        self.urlFetchFrame.pack(side='top')
         
+        self.urlLabel = Label(self.urlFetchFrame,
+                         name = "urlLabel",
+                         text = "Video URL : ")
+        self.urlLabel.pack(side='left')
         
-        #Midlle frame config
-        
-        middleFrame = Frame(self.theMainWindow,name='middleFrame',height=100 ,bg = 'blue')
-        middleFrame.grid(row=1,sticky='nwse')
-        middleFrame.grid_columnconfigure(0,weight=1)
-        middleFrame.grid_columnconfigure(3,weight=1)
-        
-        labelPlaylist = Label(middleFrame,name = "labelPlaylist",text = "Playlist ID : ")
-        labelPlaylist.grid(column=1, row=0, sticky='e',padx=10)
-        
-        entry = Entry(middleFrame,width=200)
-        entry.grid(column=2,row=0,sticky='w')
-        
+        self.urlEntry = Entry(self.urlFetchFrame,
+                         width=125)
+        self.urlEntry.pack(side='left')
 
-        #Bottom frame config
-        bottomFrame = Frame(self.theMainWindow,bg = 'yellow')
-        bottomFrame.grid(row=2,sticky='nwse')
-        bottomFrame.grid_columnconfigure(0,weight=1)
-        bottomFrame.grid_rowconfigure(0,pad=10)
-
-        buttonTest = Button(bottomFrame, text = "Click me", command=self.buttonTestClicked)
-        buttonTest.grid(column=0, row=0)
-
-
+        self.urlChoiceVideo = Radiobutton(self.urlFetchFrame,
+                                     name = "urlChoiceVideo",
+                                     text = 'video',
+                                     value='video',
+                                     variable=self.choice,
+                                     command=self.choiceSelected)
+        self.urlChoiceVideo.pack(side='left')
+        self.urlChoiceVideo.select()
         
+        self.urlChoicePlaylist = Radiobutton(self.urlFetchFrame,
+                                        name = "urlChoicePlaylist",
+                                        text = 'playlist',
+                                        value='playlist',
+                                        variable=self.choice,
+                                        command=self.choiceSelected)
+        self.urlChoicePlaylist.pack(side='left')
+        
+        self.btnFetchFrame = Frame(self.fetchFrame,
+                              name='btnFetchFrame',
+                              height=100,
+                              bg='white')
+        self.btnFetchFrame.pack(side='top')
+        self.buttonFetch = Button(self.btnFetchFrame,
+                            name = 'buttonFetch',
+                            text = "Fetch",
+                            command=self.buttonTestClicked)
+        self.buttonFetch.pack(side='left')
 
+    def buildSelectionFrame(self):
+        
+        self.selectionFrame = Frame(self.theMainWindow,
+                               name='selectionFrame',
+                               bg = 'yellow')
+        self.selectionFrame.pack(side='bottom',
+                            fill='both',
+                            expand='true')
+        
     def buttonTestClicked(self):
         #self.theMainWindow.children['middleFrame'].children['labelPlaylist'].configure(text = "Got clicked!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
         result = messagebox.askquestion(None,"Do tou want to continue")
@@ -57,10 +96,22 @@ class MainWindow:
         else:
             self.theMainWindow.destroy()
             
+    def choiceSelected(self):
+        (self.theMainWindow 
+            .children['fetchFrame'] 
+            .children['urlFetchFrame'] 
+            .children['urlLabel'] 
+            .configure(text=f"{self.choice.get().capitalize()} URL : ")
+        )
+        (self.theMainWindow
+         .children['fetchFrame']
+         .children['btnFetchFrame']
+         .children['buttonFetch']
+         .configure(text=f"Fetch {self.choice.get().capitalize()}")
+        )
 
     def run(self):
         self.theMainWindow.mainloop() 
-
 
 
 
