@@ -1,12 +1,11 @@
-# Python tkinter hello world program 
-
-
 from tkinter import *
 from tkinter import messagebox
 from tkinter.ttk import Progressbar, Treeview
+from Domain.DomainController import DomainController
 
 class MainWindow:
     theMainWindow = Tk()
+    domainController=DomainController()
    
     #Variables
     choice=StringVar()
@@ -15,7 +14,7 @@ class MainWindow:
     def __init__(self):
         self.theMainWindow.title("YouDownload")
         #self.theMainWindow.geometry("480x270")
-        self.theMainWindow.state('zoomed')
+        #self.theMainWindow.state('zoomed')
         self.theMainWindow.minsize(1000,700)
         
         #Build Frames
@@ -44,8 +43,10 @@ class MainWindow:
                          text = "Video URL : ")
         self.urlLabel.pack(side='left')
         
+        self.url=StringVar()
         self.urlEntry = Entry(self.urlFetchFrame,
-                         width=125)
+                         width=125,
+                         textvariable=self.url)
         self.urlEntry.pack(side='left')
 
         self.urlChoiceVideo = Radiobutton(self.urlFetchFrame,
@@ -68,7 +69,7 @@ class MainWindow:
         self.btnFetchFrame.pack(side='top')
         self.buttonFetch = Button(self.btnFetchFrame,
                             text = "Fetch",
-                            command=self.buttonTestClicked)
+                            command=self.FetchButtonClicked)
         self.buttonFetch.pack(side='left')
 
     def buildSelectionFrame(self):
@@ -112,7 +113,7 @@ class MainWindow:
                                             text='0')
         self.audioInfoTotalDownloadResultLabel.pack(side='right')
         self.audioInfoTotalDownloadLabel = Label(self.audioInfoFrame,
-                                            text='Number of file : ')
+                                            text='Download size : ')
         self.audioInfoTotalDownloadLabel.pack(side='right')
         
         self.audioDownloadFrame = Frame(self.selectionFrame)
@@ -133,28 +134,14 @@ class MainWindow:
         self.progressBar.pack()
         
 
-    def buttonTestClicked(self):
-        #self.theMainWindow.children['middleFrame'].children['labelPlaylist'].configure(text = "Got clicked!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-        result = messagebox.askquestion(None,"Do tou want to continue")
-        
-        if(result == 'yes'):
-            print(result)
-        else:
-            self.theMainWindow.destroy()
+    def FetchButtonClicked(self):
+        self.domainController.fetchContent(self.urlEntry.get())
+
+
             
     def choiceSelected(self):
-        (self.theMainWindow 
-            .children['fetchFrame'] 
-            .children['urlFetchFrame'] 
-            .children['urlLabel'] 
-            .configure(text=f"{self.choice.get().capitalize()} URL : ")
-        )
-        (self.theMainWindow
-         .children['fetchFrame']
-         .children['btnFetchFrame']
-         .children['buttonFetch']
-         .configure(text=f"Fetch {self.choice.get().capitalize()}")
-        )
+        self.urlLabel.configure(text=f"{self.choice.get().capitalize()} URL : ")
+        self.buttonFetch.configure(text=f"Fetch {self.choice.get().capitalize()}")
 
     def run(self):
         self.theMainWindow.mainloop() 

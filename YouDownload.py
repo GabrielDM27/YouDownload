@@ -1,7 +1,7 @@
-from Presentation import MainWindowModule
+from Presentation.MainWindowModule import MainWindow
 
 def main():
-    MainWindowModule.MainWindow()
+    MainWindow()
 
 if __name__ == "__main__":
     main()
