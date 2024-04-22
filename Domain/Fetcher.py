@@ -1,29 +1,27 @@
-from pytube import Playlist,YouTube
-
+from Domain.IFetching import IFetching
+from Domain.FetchingPlaylist import FetchingPlaylist
+from Domain.FetchingVideo import FetchingVideo
 from Domain.UrlAnalyser import UrlAnalyser
 from Domain.Data import Data
+from Util.UrlType import UrlType
 
 class Fetcher :
-    def __fetchVideo(self,url:str):
-        return YouTube(url)
-
-    def __fetchPlaylist(self,url:str):
-        return Playlist(url)
+    def __init__(self) -> None:
+        self.urlAnalyser=UrlAnalyser()
+        self.fetchingStrategy:IFetching
+    
+    def __setStrategy(self,url:str):
+        urlType = self.urlAnalyser.determineType(url)
+        if  urlType == UrlType.PLAYLIST:
+            self.fetchingStrategy = FetchingPlaylist()
+        elif urlType == UrlType.VIDEO:
+            self.fetchingStrategy = FetchingVideo()
+        else:
+            raise Exception("Url is not a video or a playlist")
 
     def fetchContent(self,data:Data, url:str):
-        urlType = UrlAnalyser().determineType(url)
+        self.__setStrategy(url)
+        data.clearVideoData()
+        data.videoData = self.fetchingStrategy.fetchContent(url)
 
-        if  urlType == "Playlist":
-
-            playlist = self.__fetchPlaylist(url)
-            if playlist:
-                for video in playlist.videos :
-                    data.videoData.append(video)
-            else:
-                print("Error")
-        elif urlType == "Video":
-
-            data.videoData.append(self.__fetchVideo(url))
-        else:
-            print("Error url is not a video or a playlist")
 

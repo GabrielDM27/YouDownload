@@ -1,7 +1,5 @@
-from pytube import Youtube
-from abc import ABC, abstractmethod
-
 class Downloader:
-    @abstractmethod
+    def __init__(self) -> None:
+        pass
     def download(self):
         pass

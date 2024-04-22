@@ -1,4 +1,4 @@
-from Presentation.MainWindowModule import MainWindow
+from Presentation.MainWindow import MainWindow
 
 def main():
     MainWindow()

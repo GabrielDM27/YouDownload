@@ -1,7 +1,8 @@
+from Util.UrlType import UrlType
 
 class UrlAnalyser :
     def determineType(self,url):
         if 'list=' in url:
-            return "Playlist"
+            return UrlType.PLAYLIST
         elif 'watch?v=' in url :
-            return "Video"
+            return UrlType.VIDEO

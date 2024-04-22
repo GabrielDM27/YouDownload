@@ -3,18 +3,16 @@ from tkinter import messagebox
 from tkinter.ttk import Progressbar, Treeview
 from Domain.DomainController import DomainController
 
+
 class MainWindow:
     theMainWindow = Tk()
-    domainController=DomainController()
-   
+    domainController = DomainController()
     #Variables
     choice=StringVar()
     
     # default constructor
     def __init__(self):
         self.theMainWindow.title("YouDownload")
-        #self.theMainWindow.geometry("480x270")
-        #self.theMainWindow.state('zoomed')
         self.theMainWindow.minsize(1000,700)
         
         #Build Frames
@@ -135,13 +133,29 @@ class MainWindow:
         
 
     def FetchButtonClicked(self):
-        self.domainController.fetchContent(self.urlEntry.get())
-
+        try:
+            self.domainController.fetchContent(self.urlEntry.get())
+        except Exception as e:
+            messagebox.showerror('Error',str(e))
+        #TODO
+        """
+        self.updateAudioSelectionBox()
+        """
 
             
     def choiceSelected(self):
         self.urlLabel.configure(text=f"{self.choice.get().capitalize()} URL : ")
         self.buttonFetch.configure(text=f"Fetch {self.choice.get().capitalize()}")
+
+    def updateAudioSelectionBox(self):
+        #TODO
+        """
+        updatedDatas = self.domainController.getData()
+        index=0
+        for video in updatedDatas:
+            self.audioSelectionBox.insert("",index,(video.title,"",""))
+            index += 1
+        """
 
     def run(self):
         self.theMainWindow.mainloop() 
