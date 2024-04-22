@@ -1,6 +1,7 @@
 from tkinter import *
 from tkinter import messagebox
-from tkinter.ttk import Progressbar, Treeview
+from tkinter.ttk import Progressbar,Combobox
+from turtle import width
 from Domain.DomainController import DomainController
 
 
@@ -19,6 +20,7 @@ class MainWindow:
         self.buildTopFrame()
         self.buildFetchFrame()
         self.buildSelectionFrame()
+        self.buildDownloadFrame()
        
         
         #Infinite loop
@@ -67,55 +69,47 @@ class MainWindow:
         self.btnFetchFrame.pack(side='top')
         self.buttonFetch = Button(self.btnFetchFrame,
                             text = "Fetch",
-                            command=self.FetchButtonClicked)
+                            command=self.fetchButtonClicked)
         self.buttonFetch.pack(side='left')
 
     def buildSelectionFrame(self):
         
         self.selectionFrame = Frame(self.theMainWindow)
-        self.selectionFrame.pack(side='bottom',
-                            fill='both',
-                            expand='true')
+        self.selectionFrame.pack(side='top')
         self.audioSelectionFrame = Frame(self.selectionFrame,
                                          name = 'audioSelectionFrame')
         self.audioSelectionFrame.pack(side='top')
-
-        self.audioSelectionBox = Treeview(self.audioSelectionFrame,
-                                          columns=('c1','c2','c3'),
-                                          show='headings',
-                                          height=10
-                                          )
-        self.audioSelectionBox.pack(side='left')
-        self.audioSelectionBox.heading(0,text='Column1')
-        self.audioSelectionBox.heading(1,text='Column2')
-        self.audioSelectionBox.heading(2,text='Column3')
-
+        
         scrollbar = Scrollbar(self.audioSelectionFrame,orient='vertical')
-        scrollbar.config(command=self.audioSelectionBox.yview)
         scrollbar.pack(side='right',fill='y')
-        
-        self.audioSelectionBox.config(yscrollcommand=scrollbar.set)
-        
-        self.audioInfoFrame = Frame(self.selectionFrame)
-        self.audioInfoFrame.pack(side='top')
-        
-        self.audioInfoNbOfFileLabel = Label(self.audioInfoFrame,
-                                            text='Number of file : ')
-        self.audioInfoNbOfFileLabel.pack(side='left')
-        self.audioInfoNbOfFileResultLabel = Label(self.audioInfoFrame,
-                                            text='0')
-        self.audioInfoNbOfFileResultLabel.pack(side='left')
 
+        self.selectionBox = Listbox(self.audioSelectionFrame,selectmode='multiple',width=100,height=10)
+        self.selectionBox.pack(side='left')
 
-        self.audioInfoTotalDownloadResultLabel = Label(self.audioInfoFrame,
-                                            text='0')
-        self.audioInfoTotalDownloadResultLabel.pack(side='right')
-        self.audioInfoTotalDownloadLabel = Label(self.audioInfoFrame,
-                                            text='Download size : ')
-        self.audioInfoTotalDownloadLabel.pack(side='right')
+        scrollbar.config(command=self.selectionBox.yview)
+        self.selectionBox.config(yscrollcommand=scrollbar.set)
+
+        self.videoQualityFrame = Frame(self.selectionFrame)
+        self.videoQualityFrame.pack(side='top',ipadx=100)
+
+        self.videoQualityLabel = Label(self.videoQualityFrame,text='Maximum video quality : ')
+        self.videoQualityLabel.pack(side='left')
+
+        self.videoQualityChoice = Combobox(self.videoQualityFrame,state='readonly')
+        self.videoQualityChoice.pack(side='left')
+
+        self.removeVideoButton = Button(self.videoQualityFrame,text='Remove Selected Video')
+        self.removeVideoButton.pack(side='right')        
+
+    def buildDownloadFrame(self):
+        self.downloadFrame = Frame(self.theMainWindow)
+        self.downloadFrame.pack(side='bottom',
+                            fill='both',
+                            expand='true')  
         
-        self.audioDownloadFrame = Frame(self.selectionFrame)
+        self.audioDownloadFrame = Frame(self.downloadFrame)
         self.audioDownloadFrame.pack(side='top')
+
         self.audioDownloadButton = Button(self.audioDownloadFrame,
                                           text='Download',
                                           width=10
@@ -126,36 +120,38 @@ class MainWindow:
                                         width=10)
         self.audioCancelButton.pack(side='left',padx=(10,0))
         
-        self.progressFrame = Frame(self.selectionFrame)
+        self.progressFrame = Frame(self.downloadFrame)
         self.progressFrame.pack(side='top')
+
         self.progressBar=Progressbar(self.progressFrame,length=400)
         self.progressBar.pack()
-        
+          
 
-    def FetchButtonClicked(self):
+    def fetchButtonClicked(self):
         try:
             self.domainController.fetchContent(self.urlEntry.get())
+            self.updateSelectionBox()
         except Exception as e:
             messagebox.showerror('Error',str(e))
-        #TODO
-        """
-        self.updateAudioSelectionBox()
-        """
 
-            
     def choiceSelected(self):
         self.urlLabel.configure(text=f"{self.choice.get().capitalize()} URL : ")
         self.buttonFetch.configure(text=f"Fetch {self.choice.get().capitalize()}")
 
-    def updateAudioSelectionBox(self):
-        #TODO
-        """
-        updatedDatas = self.domainController.getData()
+    def updateSelectionBox(self):
+
+        self.clearListBox(self.selectionBox)
+
+        videoTitles = self.domainController.getVideoTitles()
         index=0
-        for video in updatedDatas:
-            self.audioSelectionBox.insert("",index,(video.title,"",""))
+        for videoTitle in videoTitles:
+            self.selectionBox.insert(index,videoTitle)
             index += 1
-        """
+
+    def clearListBox(self,listbox:Listbox):
+        if listbox.size() > 0 :
+            lastElementIndex = listbox.size()-1
+            listbox.delete(0,lastElementIndex)
 
     def run(self):
         self.theMainWindow.mainloop() 

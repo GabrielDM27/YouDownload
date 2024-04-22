@@ -10,4 +10,10 @@ class Data:
     def printVideoData(self):
         for video in self.videoData :
             print(video.title)
+    
+    def getVideoTitles(self):
+        videoTitles = []
+        for video in self.videoData :
+            videoTitles.append(video.title)
+        return videoTitles
 

@@ -14,4 +14,6 @@ class DomainController:
 
     def fetchContent(self,url:str):
         self.fetcher.fetchContent(self.data,url)
-        self.data.printVideoData()
+    
+    def getVideoTitles(self):
+        return self.data.getVideoTitles()
