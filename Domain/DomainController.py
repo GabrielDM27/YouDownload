@@ -17,3 +17,6 @@ class DomainController:
     
     def getVideoTitles(self):
         return self.data.getVideoTitles()
+    
+    def downloadAudio(self,path):
+        self.downloader.downloadAudio(path, self.data.videoData)

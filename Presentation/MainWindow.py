@@ -1,8 +1,12 @@
 from tkinter import *
 from tkinter import messagebox
+from tkinter import filedialog
 from tkinter.ttk import Progressbar,Combobox
 from turtle import width
 from Domain.DomainController import DomainController
+import os
+
+from Util.FileExtention import FileExtention
 
 
 class MainWindow:
@@ -112,7 +116,8 @@ class MainWindow:
 
         self.audioDownloadButton = Button(self.audioDownloadFrame,
                                           text='Download',
-                                          width=10
+                                          width=10,
+                                          command=self.downloadAudio
                                           )
         self.audioDownloadButton.pack(side='left')
         self.audioCancelButton = Button(self.audioDownloadFrame,
@@ -131,6 +136,16 @@ class MainWindow:
         try:
             self.domainController.fetchContent(self.urlEntry.get())
             self.updateSelectionBox()
+        except Exception as e:
+            messagebox.showerror('Error',str(e))
+
+    def downloadAudio(self):
+        try:
+            downloadFolderDestination = filedialog.askdirectory(parent=None,
+                                                                initialdir=f"C:\\Users\\{os.getlogin()}\\Downloads",
+                                                                title="Select a folder")
+
+            self.domainController.downloadAudio(downloadFolderDestination)
         except Exception as e:
             messagebox.showerror('Error',str(e))
 
