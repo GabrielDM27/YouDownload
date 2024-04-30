@@ -20,3 +20,6 @@ class DomainController:
     
     def downloadAudio(self,path):
         self.downloader.downloadAudio(path, self.data.videoData)
+
+    def removeVideo(self,indexVideoToRemove):
+        self.data.removeVideo(indexVideoToRemove)

@@ -102,7 +102,9 @@ class MainWindow:
         self.videoQualityChoice = Combobox(self.videoQualityFrame,state='readonly')
         self.videoQualityChoice.pack(side='left')
 
-        self.removeVideoButton = Button(self.videoQualityFrame,text='Remove Selected Video')
+        self.removeVideoButton = Button(self.videoQualityFrame,
+                                        text = 'Remove Selected Video',
+                                        command = self.removeSelectedVideo)
         self.removeVideoButton.pack(side='right')        
 
     def buildDownloadFrame(self):
@@ -152,16 +154,19 @@ class MainWindow:
     def choiceSelected(self):
         self.urlLabel.configure(text=f"{self.choice.get().capitalize()} URL : ")
         self.buttonFetch.configure(text=f"Fetch {self.choice.get().capitalize()}")
+    
+    def removeSelectedVideo(self):
+        self.domainController.removeVideo(self.selectionBox.curselection())
+        self.updateSelectionBox()
 
     def updateSelectionBox(self):
 
         self.clearListBox(self.selectionBox)
 
-        videoTitles = self.domainController.getVideoTitles()
-        index=0
-        for videoTitle in videoTitles:
-            self.selectionBox.insert(index,videoTitle)
-            index += 1
+        videos = self.domainController.getVideoTitles()
+        for video in videos:
+            self.selectionBox.insert(END,video)
+
 
     def clearListBox(self,listbox:Listbox):
         if listbox.size() > 0 :
