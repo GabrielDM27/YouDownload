@@ -87,7 +87,7 @@ class MainWindow:
         scrollbar = Scrollbar(self.audioSelectionFrame,orient='vertical')
         scrollbar.pack(side='right',fill='y')
 
-        self.selectionBox = Listbox(self.audioSelectionFrame,selectmode='multiple',width=100,height=10)
+        self.selectionBox = Listbox(self.audioSelectionFrame,selectmode='extended',width=100,height=10)
         self.selectionBox.pack(side='left')
 
         scrollbar.config(command=self.selectionBox.yview)
@@ -146,8 +146,7 @@ class MainWindow:
             downloadFolderDestination = filedialog.askdirectory(parent=None,
                                                                 initialdir=f"C:\\Users\\{os.getlogin()}\\Downloads",
                                                                 title="Select a folder")
-
-            self.domainController.downloadAudio(downloadFolderDestination)
+            self.domainController.downloadAudio(downloadFolderDestination, self.selectionBox.curselection())
         except Exception as e:
             messagebox.showerror('Error',str(e))
 
