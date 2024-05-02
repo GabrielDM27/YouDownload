@@ -152,21 +152,17 @@ class MainWindow:
             self.progressBar.configure(value=0,
                                        maximum=100.001)
             self.theMainWindow.update()
+
             if self.selectionBox.curselection() : #Download only the selection
                 selection:tuple = self.selectionBox.curselection()
-                progress = 1/len(selection)*100
-                for index in selection:
-                    self.domainController.downloadAudio(downloadFolderDestination, index)
-                    self.updateProgressBarDownload(progress)
-                    
-                    
-            else: #If nothing is selected download everyting
-                selection:int = self.selectionBox.size()
-                progress = 1/selection*100
-                for index in range(0,selection):
-                    self.domainController.downloadAudio(downloadFolderDestination, index)
-                    self.updateProgressBarDownload(progress)
-                    
+            else:   #If nothing is selected download everyting
+                selection:tuple = range(0,self.selectionBox.size())
+
+            progress = 1/len(selection)*100
+
+            for index in selection :
+                self.domainController.downloadAudio(downloadFolderDestination,index)
+                self.updateProgressBarDownload(progress)
         
         except Exception as e:
             messagebox.showerror('Error',str(e))

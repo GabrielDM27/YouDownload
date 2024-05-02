@@ -1,5 +1,4 @@
 import array as arr
-from numpy import append
 from pytube import YouTube
 class Data:
     def __init__(self) -> None:
@@ -9,7 +8,6 @@ class Data:
         self.videoData.clear()
 
     def printVideoData(self):
-        #TODO
         for video in self.videoData :
             print(video.title)
     
