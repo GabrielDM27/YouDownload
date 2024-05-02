@@ -2,7 +2,7 @@ from tkinter import *
 from tkinter import messagebox
 from tkinter import filedialog
 from tkinter.ttk import Progressbar,Combobox
-from turtle import width
+from turtle import update, width
 from Domain.DomainController import DomainController
 import os
 
@@ -130,7 +130,9 @@ class MainWindow:
         self.progressFrame = Frame(self.downloadFrame)
         self.progressFrame.pack(side='top')
 
-        self.progressBar=Progressbar(self.progressFrame,length=400)
+        self.progressBar=Progressbar(self.progressFrame,
+                                     length=400,
+                                     maximum=100)
         self.progressBar.pack()
           
 
@@ -146,7 +148,26 @@ class MainWindow:
             downloadFolderDestination = filedialog.askdirectory(parent=None,
                                                                 initialdir=f"C:\\Users\\{os.getlogin()}\\Downloads",
                                                                 title="Select a folder")
-            self.domainController.downloadAudio(downloadFolderDestination, self.selectionBox.curselection())
+            
+            self.progressBar.configure(value=0,
+                                       maximum=100.001)
+            self.theMainWindow.update()
+            if self.selectionBox.curselection() : #Download only the selection
+                selection:tuple = self.selectionBox.curselection()
+                progress = 1/len(selection)*100
+                for index in selection:
+                    self.domainController.downloadAudio(downloadFolderDestination, index)
+                    self.updateProgressBarDownload(progress)
+                    
+                    
+            else: #If nothing is selected download everyting
+                selection:int = self.selectionBox.size()
+                progress = 1/selection*100
+                for index in range(0,selection):
+                    self.domainController.downloadAudio(downloadFolderDestination, index)
+                    self.updateProgressBarDownload(progress)
+                    
+        
         except Exception as e:
             messagebox.showerror('Error',str(e))
 
@@ -166,11 +187,14 @@ class MainWindow:
         for video in videos:
             self.selectionBox.insert(END,video)
 
-
     def clearListBox(self,listbox:Listbox):
         if listbox.size() > 0 :
             lastElementIndex = listbox.size()-1
             listbox.delete(0,lastElementIndex)
+
+    def updateProgressBarDownload(self,progress):
+        self.progressBar.step(progress)
+        self.theMainWindow.update()
 
     def run(self):
         self.theMainWindow.mainloop() 
