@@ -7,6 +7,7 @@ from Domain.DomainController import DomainController
 import os
 
 from Util.FileExtention import FileExtention
+from Util.RemoveIllegalCharacter import RemoveIllegalCharacter
 
 
 class MainWindow:
@@ -130,10 +131,15 @@ class MainWindow:
         self.progressFrame = Frame(self.downloadFrame)
         self.progressFrame.pack(side='top')
 
+        self.progressLabel=Label(self.progressFrame,
+                                 text="")
+        self.progressLabel.pack(side='top')
+
         self.progressBar=Progressbar(self.progressFrame,
                                      length=400,
                                      maximum=100)
         self.progressBar.pack()
+
           
 
     def fetchButtonClicked(self):
@@ -145,28 +151,47 @@ class MainWindow:
 
     def downloadAudio(self):
         try:
-            downloadFolderDestination = filedialog.askdirectory(parent=None,
-                                                                initialdir=f"C:\\Users\\{os.getlogin()}\\Downloads",
-                                                                title="Select a folder")
-            
+            self.buttonFetch.configure(state='disabled')
+            self.removeVideoButton.configure(state='disabled')
+            self.audioDownloadButton.configure(state='disabled')
             self.progressBar.configure(value=0,
-                                       maximum=100.001)
+                                       maximum=100.001,)
             self.theMainWindow.update()
+
 
             if self.selectionBox.curselection() : #Download only the selection
                 selection:tuple = self.selectionBox.curselection()
             else:   #If nothing is selected download everyting
                 selection:tuple = range(0,self.selectionBox.size())
 
-            progress = 1/len(selection)*100
-
-            for index in selection :
-                self.domainController.downloadAudio(downloadFolderDestination,index)
-                self.updateProgressBarDownload(progress)
-        
+            totalNumberOfDownload=len(selection)
+            if(totalNumberOfDownload > 0):
+                downloadFolderDestination = filedialog.askdirectory(parent=None,
+                                                                    initialdir=f"C:\\Users\\{os.getlogin()}\\Downloads",
+                                                                    title="Select a folder")
+                progress = 1/totalNumberOfDownload*100
+                activeDownloadPosition = 1
+                try:
+                    for index in selection :
+                        videoTitle = RemoveIllegalCharacter.windowsFileExplorer(self.selectionBox.get(index))
+                        self.domainController.downloadAudio(downloadFolderDestination,index)
+                        self.progressLabel.configure(text=f'Downloading ({activeDownloadPosition}/{totalNumberOfDownload}) :  {videoTitle}')
+                        self.progressBar.step(progress)
+                        self.theMainWindow.update()
+                        activeDownloadPosition += 1
+                except:
+                    self.progressLabel.configure(f"Error occured while downloading :\n{videoTitle}")
+                    raise Exception(f"Error occured while downloading :\n{videoTitle}")
+                else:
+                    self.progressLabel.configure(text="Download completed")
         except Exception as e:
             messagebox.showerror('Error',str(e))
-
+        finally:
+            self.buttonFetch.configure(state='active')
+            self.removeVideoButton.configure(state='active')
+            self.audioDownloadButton.configure(state='active')
+            self.theMainWindow.update()
+    
     def choiceSelected(self):
         self.urlLabel.configure(text=f"{self.choice.get().capitalize()} URL : ")
         self.buttonFetch.configure(text=f"Fetch {self.choice.get().capitalize()}")
@@ -187,10 +212,6 @@ class MainWindow:
         if listbox.size() > 0 :
             lastElementIndex = listbox.size()-1
             listbox.delete(0,lastElementIndex)
-
-    def updateProgressBarDownload(self,progress):
-        self.progressBar.step(progress)
-        self.theMainWindow.update()
 
     def run(self):
         self.theMainWindow.mainloop() 
