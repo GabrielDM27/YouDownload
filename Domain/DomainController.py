@@ -19,8 +19,11 @@ class DomainController:
         return self.data.getVideoTitles()
     
     def downloadAudio(self,path,index):
-        self.downloader.downloadAudio(path, self.data.videoData[index])
+        self.downloader.downloadAudio(path, self.data, index)
+
 
     def removeVideo(self,indexVideoToRemove):
         self.data.removeVideo(indexVideoToRemove)
 
+    def cancelDownload(self):
+        self.downloader.cancelDownload()

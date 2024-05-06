@@ -15,6 +15,7 @@ class MainWindow:
     domainController = DomainController()
     #Variables
     choice=StringVar()
+    isCancelled=False
     
     # default constructor
     def __init__(self):
@@ -125,7 +126,8 @@ class MainWindow:
         self.audioDownloadButton.pack(side='left')
         self.audioCancelButton = Button(self.audioDownloadFrame,
                                         text='Cancel',
-                                        width=10)
+                                        width=10,
+                                        command=self.cancelDownload)
         self.audioCancelButton.pack(side='left',padx=(10,0))
         
         self.progressFrame = Frame(self.downloadFrame)
@@ -146,10 +148,14 @@ class MainWindow:
         try:
             self.domainController.fetchContent(self.urlEntry.get())
             self.updateSelectionBox()
+            self.progressBar.configure(value=0)
+            self.progressLabel.configure(text="")
+            self.theMainWindow.update()
         except Exception as e:
             messagebox.showerror('Error',str(e))
 
     def downloadAudio(self):
+        self.isCancelled=False
         try:
             self.buttonFetch.configure(state='disabled')
             self.removeVideoButton.configure(state='disabled')
@@ -173,15 +179,17 @@ class MainWindow:
                 activeDownloadPosition = 1
                 try:
                     for index in selection :
+                        if self.isCancelled :
+                            break
                         videoTitle = RemoveIllegalCharacter.windowsFileExplorer(self.selectionBox.get(index))
-                        self.domainController.downloadAudio(downloadFolderDestination,index)
-                        self.progressLabel.configure(text=f'Downloading ({activeDownloadPosition}/{totalNumberOfDownload}) :  {videoTitle}')
-                        self.progressBar.step(progress)
+                        self.progressLabel.configure(text=f"Downloading ({activeDownloadPosition}/{totalNumberOfDownload}) :  {videoTitle}")
                         self.theMainWindow.update()
+                        self.domainController.downloadAudio(downloadFolderDestination,index)
+                        self.progressBar.step(progress)
                         activeDownloadPosition += 1
-                except:
-                    self.progressLabel.configure(f"Error occured while downloading :\n{videoTitle}")
-                    raise Exception(f"Error occured while downloading :\n{videoTitle}")
+                except Exception as e:
+                    self.progressLabel.configure(str(e))
+                    raise Exception(str(e))
                 else:
                     self.progressLabel.configure(text="Download completed")
         except Exception as e:
@@ -199,6 +207,8 @@ class MainWindow:
     def removeSelectedVideo(self):
         self.domainController.removeVideo(self.selectionBox.curselection())
         self.updateSelectionBox()
+        self.progressLabel.configure(text="")
+        self.progressBar.configure(value=0)
 
     def updateSelectionBox(self):
 
@@ -212,6 +222,12 @@ class MainWindow:
         if listbox.size() > 0 :
             lastElementIndex = listbox.size()-1
             listbox.delete(0,lastElementIndex)
+
+    def cancelDownload(self):
+        self.isCancelled=True
+        self.progressLabel.configure(text="Download Canceled")
+        self.progressBar.configure(value=0)
+        self.domainController.cancelDownload()
 
     def run(self):
         self.theMainWindow.mainloop() 
