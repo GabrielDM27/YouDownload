@@ -1,14 +1,17 @@
 from Domain.IFetching import IFetching
+from Domain.Data import Data
 from pytube import YouTube
 
 class FetchingVideo(IFetching):
     def __fetchVideo(self,url:str):
         return YouTube(url)
 
-    def fetchContent(self,url):
-        fetchedVideo=[]
+    def fetchContent(self,data:Data,url:str,index:int=None):
         video = self.__fetchVideo(url)
-        fetchedVideo.append(video)
+        if index :
+            data.videoData[index] = video
+        else:
+            data.clearVideoData()
+            data.videoData.append(video)
             
-        return fetchedVideo
     

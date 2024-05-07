@@ -5,12 +5,13 @@ from tkinter.ttk import Progressbar,Combobox
 from turtle import update, width
 from Domain.DomainController import DomainController
 import os
-
+from Util.DownloadStatus import DownloadStatus
 from Util.FileExtention import FileExtention
+from Util.IDownloadProgressSubscriber import IDownloadProgressSubscriber
 from Util.RemoveIllegalCharacter import RemoveIllegalCharacter
 
 
-class MainWindow:
+class MainWindow(IDownloadProgressSubscriber):
     theMainWindow = Tk()
     domainController = DomainController()
     #Variables
@@ -19,6 +20,7 @@ class MainWindow:
     
     # default constructor
     def __init__(self):
+        self.subscribeToDownloadProgress()
         self.theMainWindow.title("YouDownload")
         self.theMainWindow.minsize(1000,700)
         
@@ -175,23 +177,9 @@ class MainWindow:
                 downloadFolderDestination = filedialog.askdirectory(parent=None,
                                                                     initialdir=f"C:\\Users\\{os.getlogin()}\\Downloads",
                                                                     title="Select a folder")
-                progress = 1/totalNumberOfDownload*100
-                activeDownloadPosition = 1
-                try:
-                    for index in selection :
-                        if self.isCancelled :
-                            break
-                        videoTitle = RemoveIllegalCharacter.windowsFileExplorer(self.selectionBox.get(index))
-                        self.progressLabel.configure(text=f"Downloading ({activeDownloadPosition}/{totalNumberOfDownload}) :  {videoTitle}")
-                        self.theMainWindow.update()
-                        self.domainController.downloadAudio(downloadFolderDestination,index)
-                        self.progressBar.step(progress)
-                        activeDownloadPosition += 1
-                except Exception as e:
-                    self.progressLabel.configure(str(e))
-                    raise Exception(str(e))
-                else:
-                    self.progressLabel.configure(text="Download completed")
+
+                self.domainController.downloadAudio(downloadFolderDestination,selection)
+
         except Exception as e:
             messagebox.showerror('Error',str(e))
         finally:
@@ -228,6 +216,19 @@ class MainWindow:
         self.progressLabel.configure(text="Download Canceled")
         self.progressBar.configure(value=0)
         self.domainController.cancelDownload()
+
+    def subscribeToDownloadProgress(self):
+        self.domainController.subscribeToDownloadProgress(self)
+
+    def updateDownloadProgress(self,downloadProgessDto):
+        if(downloadProgessDto.downloadStatus == DownloadStatus.CANCELLED):
+            self.progressLabel.configure(text="Download Canceled")
+            self.progressBar.configure(value=0)
+
+        if(downloadProgessDto.downloadStatus == DownloadStatus.DOWNLOADING):
+            self.progressLabel.configure(text=f"Downloading ({downloadProgessDto.activeNbOfDownload}/{downloadProgessDto.totalNumberOfDownload}) :  {downloadProgessDto.activeVideoTitle}")
+            self.theMainWindow.update()
+            self.progressBar.step(downloadProgessDto.downloadProgressStep)
 
     def run(self):
         self.theMainWindow.mainloop() 

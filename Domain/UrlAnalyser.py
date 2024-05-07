@@ -6,3 +6,5 @@ class UrlAnalyser :
             return UrlType.PLAYLIST
         elif 'watch?v=' in url :
             return UrlType.VIDEO
+        elif 'redo=' in url :
+            return UrlType.REFETCH

@@ -19,9 +19,8 @@ class Fetcher :
         else:
             raise Exception("Url is not a video or a playlist")
 
-    def fetchContent(self,data:Data, url:str):
+    def fetchContent(self,data:Data, url:str, index:int=None):
         self.__setStrategy(url)
-        data.clearVideoData()
-        data.videoData = self.fetchingStrategy.fetchContent(url)
+        self.fetchingStrategy.fetchContent(data, url, index)
 
 
