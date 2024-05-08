@@ -1,26 +1,9 @@
 from tkinter import *
-from tkinter import messagebox
-from tkinter import filedialog
 from tkinter.ttk import Progressbar,Combobox
-from turtle import update, width
-from Domain.DomainController import DomainController
-import os
-from Util.DownloadStatus import DownloadStatus
-from Util.FileExtention import FileExtention
-from Util.IDownloadProgressSubscriber import IDownloadProgressSubscriber
-from Util.RemoveIllegalCharacter import RemoveIllegalCharacter
 
-
-class MainWindow(IDownloadProgressSubscriber):
-    theMainWindow = Tk()
-    domainController = DomainController()
-    #Variables
-    choice=StringVar()
-    isCancelled=False
-    
-    # default constructor
+class MainWindow:
     def __init__(self):
-        self.subscribeToDownloadProgress()
+        self.theMainWindow = Tk()
         self.theMainWindow.title("YouDownload")
         self.theMainWindow.minsize(1000,700)
         
@@ -29,10 +12,7 @@ class MainWindow(IDownloadProgressSubscriber):
         self.buildFetchFrame()
         self.buildSelectionFrame()
         self.buildDownloadFrame()
-       
-        
-        #Infinite loop
-        self.run()
+
 
     def buildTopFrame(self):
         self.topFrame = Frame(self.theMainWindow,
@@ -56,28 +36,13 @@ class MainWindow(IDownloadProgressSubscriber):
                          width=125,
                          textvariable=self.url)
         self.urlEntry.pack(side='left')
-
-        self.urlChoiceVideo = Radiobutton(self.urlFetchFrame,
-                                     text = 'video',
-                                     value='video',
-                                     variable=self.choice,
-                                     command=self.choiceSelected)
-        self.urlChoiceVideo.pack(side='left')
-        self.urlChoiceVideo.select()
-        
-        self.urlChoicePlaylist = Radiobutton(self.urlFetchFrame,
-                                        text = 'playlist',
-                                        value='playlist',
-                                        variable=self.choice,
-                                        command=self.choiceSelected)
-        self.urlChoicePlaylist.pack(side='left')
         
         self.btnFetchFrame = Frame(self.fetchFrame,
                               height=100)
         self.btnFetchFrame.pack(side='top')
         self.buttonFetch = Button(self.btnFetchFrame,
-                            text = "Fetch",
-                            command=self.fetchButtonClicked)
+                            text = "Fetch"
+                            )
         self.buttonFetch.pack(side='left')
 
     def buildSelectionFrame(self):
@@ -107,8 +72,8 @@ class MainWindow(IDownloadProgressSubscriber):
         self.videoQualityChoice.pack(side='left')
 
         self.removeVideoButton = Button(self.videoQualityFrame,
-                                        text = 'Remove Selected Video',
-                                        command = self.removeSelectedVideo)
+                                        text = 'Remove Selected Video'
+                                        )
         self.removeVideoButton.pack(side='right')        
 
     def buildDownloadFrame(self):
@@ -123,13 +88,12 @@ class MainWindow(IDownloadProgressSubscriber):
         self.audioDownloadButton = Button(self.audioDownloadFrame,
                                           text='Download',
                                           width=10,
-                                          command=self.downloadAudio
                                           )
         self.audioDownloadButton.pack(side='left')
         self.audioCancelButton = Button(self.audioDownloadFrame,
                                         text='Cancel',
                                         width=10,
-                                        command=self.cancelDownload)
+                                        )
         self.audioCancelButton.pack(side='left',padx=(10,0))
         
         self.progressFrame = Frame(self.downloadFrame)
@@ -143,93 +107,7 @@ class MainWindow(IDownloadProgressSubscriber):
                                      length=400,
                                      maximum=100)
         self.progressBar.pack()
-
-          
-
-    def fetchButtonClicked(self):
-        try:
-            self.domainController.fetchContent(self.urlEntry.get())
-            self.updateSelectionBox()
-            self.progressBar.configure(value=0)
-            self.progressLabel.configure(text="")
-            self.theMainWindow.update()
-        except Exception as e:
-            messagebox.showerror('Error',str(e))
-
-    def downloadAudio(self):
-        self.isCancelled=False
-        try:
-            self.buttonFetch.configure(state='disabled')
-            self.removeVideoButton.configure(state='disabled')
-            self.audioDownloadButton.configure(state='disabled')
-            self.progressBar.configure(value=0,
-                                       maximum=100.001,)
-            self.theMainWindow.update()
-
-
-            if self.selectionBox.curselection() : #Download only the selection
-                selection:tuple = self.selectionBox.curselection()
-            else:   #If nothing is selected download everyting
-                selection:tuple = range(0,self.selectionBox.size())
-
-            totalNumberOfDownload=len(selection)
-            if(totalNumberOfDownload > 0):
-                downloadFolderDestination = filedialog.askdirectory(parent=None,
-                                                                    initialdir=f"C:\\Users\\{os.getlogin()}\\Downloads",
-                                                                    title="Select a folder")
-
-                self.domainController.downloadAudio(downloadFolderDestination,selection)
-
-        except Exception as e:
-            messagebox.showerror('Error',str(e))
-        finally:
-            self.buttonFetch.configure(state='active')
-            self.removeVideoButton.configure(state='active')
-            self.audioDownloadButton.configure(state='active')
-            self.theMainWindow.update()
     
-    def choiceSelected(self):
-        self.urlLabel.configure(text=f"{self.choice.get().capitalize()} URL : ")
-        self.buttonFetch.configure(text=f"Fetch {self.choice.get().capitalize()}")
-    
-    def removeSelectedVideo(self):
-        self.domainController.removeVideo(self.selectionBox.curselection())
-        self.updateSelectionBox()
-        self.progressLabel.configure(text="")
-        self.progressBar.configure(value=0)
-
-    def updateSelectionBox(self):
-
-        self.clearListBox(self.selectionBox)
-
-        videos = self.domainController.getVideoTitles()
-        for video in videos:
-            self.selectionBox.insert(END,video)
-
-    def clearListBox(self,listbox:Listbox):
-        if listbox.size() > 0 :
-            lastElementIndex = listbox.size()-1
-            listbox.delete(0,lastElementIndex)
-
-    def cancelDownload(self):
-        self.isCancelled=True
-        self.progressLabel.configure(text="Download Canceled")
-        self.progressBar.configure(value=0)
-        self.domainController.cancelDownload()
-
-    def subscribeToDownloadProgress(self):
-        self.domainController.subscribeToDownloadProgress(self)
-
-    def updateDownloadProgress(self,downloadProgessDto):
-        if(downloadProgessDto.downloadStatus == DownloadStatus.CANCELLED):
-            self.progressLabel.configure(text="Download Canceled")
-            self.progressBar.configure(value=0)
-
-        if(downloadProgessDto.downloadStatus == DownloadStatus.DOWNLOADING):
-            self.progressLabel.configure(text=f"Downloading ({downloadProgessDto.activeNbOfDownload}/{downloadProgessDto.totalNumberOfDownload}) :  {downloadProgessDto.activeVideoTitle}")
-            self.theMainWindow.update()
-            self.progressBar.step(downloadProgessDto.downloadProgressStep)
-
     def run(self):
         self.theMainWindow.mainloop() 
 
