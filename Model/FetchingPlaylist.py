@@ -1,5 +1,5 @@
-from Domain.IFetching import IFetching
-from Domain.Data import Data
+from Model.IFetching import IFetching
+from Model.Data import Data
 from pytube import Playlist
 
 class FetchingPlaylist(IFetching):

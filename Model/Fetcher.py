@@ -1,8 +1,8 @@
-from Domain.IFetching import IFetching
-from Domain.FetchingPlaylist import FetchingPlaylist
-from Domain.FetchingVideo import FetchingVideo
-from Domain.UrlAnalyser import UrlAnalyser
-from Domain.Data import Data
+from Model.IFetching import IFetching
+from Model.FetchingPlaylist import FetchingPlaylist
+from Model.FetchingVideo import FetchingVideo
+from Model.UrlAnalyser import UrlAnalyser
+from Model.Data import Data
 from Util.UrlType import UrlType
 
 class Fetcher :

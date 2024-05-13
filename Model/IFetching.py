@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from Domain.Data import Data
+from Model.Data import Data
 
 class IFetching(ABC):
     @abstractmethod

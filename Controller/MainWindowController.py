@@ -1,6 +1,6 @@
 from tkinter import *
 from tkinter import messagebox, filedialog
-import Domain.DomainController as DomainController
+import Model.ModelFacade as Model
 import Presentation.MainWindow as MainWindow
 import os
 import Util.IDownloadProgressSubscriber as IDownloadProgressSubscriber
@@ -8,7 +8,7 @@ from Util.DownloadStatus import DownloadStatus
 from Controller.DTO.DownloadProgressDto import DownloadProgressDto
 
 class MainWindowController(IDownloadProgressSubscriber.IDownloadProgressSubscriber):
-    def __init__(self,model:DomainController.DomainController, view:MainWindow.MainWindow,) -> None:
+    def __init__(self,model:Model.ModelFacade, view:MainWindow.MainWindow,) -> None:
         self.model = model
         self.mainWindow = view
 
