@@ -1,5 +1,6 @@
 from tkinter import *
 from tkinter.ttk import Progressbar,Combobox
+from PIL import Image, ImageTk
 
 class MainWindow:
     def __init__(self):
@@ -18,6 +19,10 @@ class MainWindow:
         self.topFrame = Frame(self.theMainWindow,
                          height=300)
         self.topFrame.pack(side='top')
+        self.image =ImageTk.PhotoImage(Image.open("Image\\YoutubePlaylist.jpg").resize((400,200)))
+        self.banner = Canvas(self.topFrame ,width=400,height=200)
+        self.bannerImage = self.banner.create_image(0,0,image=self.image,anchor=NW)
+        self.banner.pack(side='top',pady=(10,0))
         
     def buildFetchFrame(self):
         self.fetchFrame = Frame(self.theMainWindow,
@@ -25,7 +30,7 @@ class MainWindow:
         self.fetchFrame.pack(side='top')
                 
         self.urlFetchFrame = Frame(self.fetchFrame)
-        self.urlFetchFrame.pack(side='top')
+        self.urlFetchFrame.pack(side='top',pady=10)
         
         self.urlLabel = Label(self.urlFetchFrame,
                          text = "Video URL : ")
@@ -41,7 +46,8 @@ class MainWindow:
                               height=100)
         self.btnFetchFrame.pack(side='top')
         self.buttonFetch = Button(self.btnFetchFrame,
-                            text = "Fetch"
+                            text = "Fetch",
+                            width=20
                             )
         self.buttonFetch.pack(side='left')
 
@@ -51,7 +57,7 @@ class MainWindow:
         self.selectionFrame.pack(side='top')
         self.audioSelectionFrame = Frame(self.selectionFrame,
                                          name = 'audioSelectionFrame')
-        self.audioSelectionFrame.pack(side='top')
+        self.audioSelectionFrame.pack(side='top',ipady=10)
         
         scrollbar = Scrollbar(self.audioSelectionFrame,orient='vertical')
         scrollbar.pack(side='right',fill='y')
@@ -83,7 +89,7 @@ class MainWindow:
                             expand='true')  
         
         self.audioDownloadFrame = Frame(self.downloadFrame)
-        self.audioDownloadFrame.pack(side='top')
+        self.audioDownloadFrame.pack(side='top',pady=(20,0))
 
         self.audioDownloadButton = Button(self.audioDownloadFrame,
                                           text='Download',

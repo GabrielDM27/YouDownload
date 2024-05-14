@@ -1,5 +1,4 @@
-from xml import dom
-import Presentation.MainWindow as MainWindow
+import View.MainWindow as MainWindow
 import Model.ModelFacade as Model
 import Controller.MainWindowController as MainWindowController
 

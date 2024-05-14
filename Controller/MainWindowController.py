@@ -1,11 +1,12 @@
 from tkinter import *
 from tkinter import messagebox, filedialog
 import Model.ModelFacade as Model
-import Presentation.MainWindow as MainWindow
+import View.MainWindow as MainWindow
 import os
 import Util.IDownloadProgressSubscriber as IDownloadProgressSubscriber
 from Util.DownloadStatus import DownloadStatus
 from Controller.DTO.DownloadProgressDto import DownloadProgressDto
+import webbrowser
 
 class MainWindowController(IDownloadProgressSubscriber.IDownloadProgressSubscriber):
     def __init__(self,model:Model.ModelFacade, view:MainWindow.MainWindow,) -> None:
@@ -19,6 +20,13 @@ class MainWindowController(IDownloadProgressSubscriber.IDownloadProgressSubscrib
         self.__removeVideoButtonBind()
         self.__audioDownloadButtonBind()
         self.__audioCancelButtonBind()
+        self.__bannerBind()
+    
+    def __bannerCommand(*args):
+        webbrowser.open("https://www.youtube.com/feed/playlists")
+
+    def __bannerBind(self):
+        self.mainWindow.banner.tag_bind(self.mainWindow.bannerImage,'<Button-1>',self.__bannerCommand)
 
     def clearListBox(self,listbox:Listbox):
         if listbox.size() > 0 :
@@ -97,6 +105,7 @@ class MainWindowController(IDownloadProgressSubscriber.IDownloadProgressSubscrib
 
     def __audioCancelButtonBind(self):
         self.mainWindow.audioCancelButton.configure(command=self.__audioCancelButtonCommand)
+    
 
     def updateDownloadProgress(self):
         downloadProgressDto = DownloadProgressDto(self.model.downloader)
