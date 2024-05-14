@@ -123,6 +123,6 @@ class MainWindowController(IDownloadProgressSubscriber.IDownloadProgressSubscrib
             self.mainWindow.theMainWindow.update()
 
         if(downloadProgressDto.downloadStatus == DownloadStatus.ERROR):
-            self.mainWindow.progressLabel.configure(text=f"Download Failed ({downloadProgressDto.activeNbOfDownload}/{downloadProgressDto.totalNumberOfDownload}):  {downloadProgessDto.activeVideoTitle}")
+            self.mainWindow.progressLabel.configure(text=f"Download Failed ({downloadProgressDto.activeNbOfDownload}/{downloadProgressDto.totalNumberOfDownload}):  {downloadProgressDto.activeVideoTitle}")
             self.mainWindow.progressBar.configure(value=0)
             self.mainWindow.theMainWindow.update()
