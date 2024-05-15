@@ -2,6 +2,8 @@ from tkinter import *
 from tkinter.ttk import Progressbar,Combobox
 from PIL import Image, ImageTk
 
+from Util.VideoQuality import VideoQuality
+
 class MainWindow:
     def __init__(self):
         self.theMainWindow = Tk()
@@ -55,14 +57,13 @@ class MainWindow:
         
         self.selectionFrame = Frame(self.theMainWindow)
         self.selectionFrame.pack(side='top')
-        self.audioSelectionFrame = Frame(self.selectionFrame,
-                                         name = 'audioSelectionFrame')
-        self.audioSelectionFrame.pack(side='top',ipady=10)
+        self.videoSelectionFrame = Frame(self.selectionFrame)
+        self.videoSelectionFrame.pack(side='top',ipady=10)
         
-        scrollbar = Scrollbar(self.audioSelectionFrame,orient='vertical')
+        scrollbar = Scrollbar(self.videoSelectionFrame,orient='vertical')
         scrollbar.pack(side='right',fill='y')
 
-        self.selectionBox = Listbox(self.audioSelectionFrame,selectmode='extended',width=100,height=10)
+        self.selectionBox = Listbox(self.videoSelectionFrame,selectmode='extended',width=100,height=10)
         self.selectionBox.pack(side='left')
 
         scrollbar.config(command=self.selectionBox.yview)
@@ -75,6 +76,8 @@ class MainWindow:
         self.videoQualityLabel.pack(side='left')
 
         self.videoQualityChoice = Combobox(self.videoQualityFrame,state='readonly')
+        self.videoQualityChoice['values'] = VideoQuality.getVideoQualityList()
+        self.videoQualityChoice.current(0)  #Audio Only by default
         self.videoQualityChoice.pack(side='left')
 
         self.removeVideoButton = Button(self.videoQualityFrame,
@@ -88,19 +91,19 @@ class MainWindow:
                             fill='both',
                             expand='true')  
         
-        self.audioDownloadFrame = Frame(self.downloadFrame)
-        self.audioDownloadFrame.pack(side='top',pady=(20,0))
+        self.videoDownloadFrame = Frame(self.downloadFrame)
+        self.videoDownloadFrame.pack(side='top',pady=(20,0))
 
-        self.audioDownloadButton = Button(self.audioDownloadFrame,
+        self.videoDownloadButton = Button(self.videoDownloadFrame,
                                           text='Download',
                                           width=10,
                                           )
-        self.audioDownloadButton.pack(side='left')
-        self.audioCancelButton = Button(self.audioDownloadFrame,
+        self.videoDownloadButton.pack(side='left')
+        self.videoCancelButton = Button(self.videoDownloadFrame,
                                         text='Cancel',
                                         width=10,
                                         )
-        self.audioCancelButton.pack(side='left',padx=(10,0))
+        self.videoCancelButton.pack(side='left',padx=(10,0))
         
         self.progressFrame = Frame(self.downloadFrame)
         self.progressFrame.pack(side='top')

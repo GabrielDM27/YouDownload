@@ -22,8 +22,8 @@ class ModelFacade:
     def getVideoTitles(self):
         return self.data.getVideoTitles()
     
-    def downloadAudio(self,path,selection):
-        self.downloader.downloadAudioSelection(self.data,self.fetcher,path,selection)
+    def downloadVideo(self,path,selection,videoQualityIndex):
+        self.downloader.downloadVideoSelection(self.data,self.fetcher,path,selection,videoQualityIndex)
 
     def removeVideo(self,indexVideoToRemove):
         self.data.removeVideo(indexVideoToRemove)

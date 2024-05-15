@@ -1,6 +1,7 @@
 from tkinter import *
 from tkinter import messagebox, filedialog
 import Model.ModelFacade as Model
+from Util.VideoQuality import VideoQuality
 import View.MainWindow as MainWindow
 import os
 import Util.IDownloadProgressSubscriber as IDownloadProgressSubscriber
@@ -18,7 +19,7 @@ class MainWindowController(IDownloadProgressSubscriber.IDownloadProgressSubscrib
         #bindButtons
         self.__buttonFetchBind()
         self.__removeVideoButtonBind()
-        self.__audioDownloadButtonBind()
+        self.__downloadButtonBind()
         self.__audioCancelButtonBind()
         self.__bannerBind()
     
@@ -64,11 +65,11 @@ class MainWindowController(IDownloadProgressSubscriber.IDownloadProgressSubscrib
     def __removeVideoButtonBind(self):
         self.mainWindow.removeVideoButton.configure(command=self.__removeVideoButtonCommand)
 
-    def __audioDownloadButtonCommand(self):
+    def __downloadButtonCommand(self):
         try:
             self.mainWindow.buttonFetch.configure(state='disabled')
             self.mainWindow.removeVideoButton.configure(state='disabled')
-            self.mainWindow.audioDownloadButton.configure(state='disabled')
+            self.mainWindow.videoDownloadButton.configure(state='disabled')
             self.mainWindow.progressBar.configure(value=0,
                                        maximum=100.001,)
             self.mainWindow.theMainWindow.update()
@@ -84,7 +85,7 @@ class MainWindowController(IDownloadProgressSubscriber.IDownloadProgressSubscrib
                                                                     initialdir=f"C:\\Users\\{os.getlogin()}\\Downloads",
                                                                     title="Select a folder")
 
-                self.model.downloadAudio(downloadFolderDestination,selection)
+                self.model.downloadVideo(downloadFolderDestination,selection,self.mainWindow.videoQualityChoice.current())
 
         except Exception as e:
             messagebox.showerror('Error',str(e))
@@ -92,11 +93,11 @@ class MainWindowController(IDownloadProgressSubscriber.IDownloadProgressSubscrib
         finally:
             self.mainWindow.buttonFetch.configure(state='active')
             self.mainWindow.removeVideoButton.configure(state='active')
-            self.mainWindow.audioDownloadButton.configure(state='active')
+            self.mainWindow.videoDownloadButton.configure(state='active')
             self.mainWindow.theMainWindow.update()
 
-    def __audioDownloadButtonBind(self):
-        self.mainWindow.audioDownloadButton.configure(command=self.__audioDownloadButtonCommand)
+    def __downloadButtonBind(self):
+        self.mainWindow.videoDownloadButton.configure(command=self.__downloadButtonCommand)
 
     def __audioCancelButtonCommand(self):
         self.mainWindow.progressLabel.configure(text="Download Canceled")
@@ -104,7 +105,7 @@ class MainWindowController(IDownloadProgressSubscriber.IDownloadProgressSubscrib
         self.model.cancelDownload()
 
     def __audioCancelButtonBind(self):
-        self.mainWindow.audioCancelButton.configure(command=self.__audioCancelButtonCommand)
+        self.mainWindow.videoCancelButton.configure(command=self.__audioCancelButtonCommand)
     
 
     def updateDownloadProgress(self):
@@ -123,6 +124,7 @@ class MainWindowController(IDownloadProgressSubscriber.IDownloadProgressSubscrib
             self.mainWindow.theMainWindow.update()
 
         if(downloadProgressDto.downloadStatus == DownloadStatus.ERROR):
-            self.mainWindow.progressLabel.configure(text=f"Download Failed ({downloadProgressDto.activeNbOfDownload}/{downloadProgressDto.totalNumberOfDownload}):  {downloadProgressDto.activeVideoTitle}")
+            self.mainWindow.progressLabel.configure(text=f"Download Failed ({downloadProgressDto.activeNbOfDownload}/{downloadProgressDto.totalNumberOfDownload}):  {downloadProgressDto.videoTitle}")
             self.mainWindow.progressBar.configure(value=0)
             self.mainWindow.theMainWindow.update()
+            raise Exception(f"Error while downloading : {downloadProgressDto.videoTitle}")
